@@ -1,0 +1,42 @@
+version: '1.0'
+services:
+  api:
+    container_name: api-gateway
+    restart: always
+    build: ./api-gateway
+    depends_on:
+      - db
+    ports:
+      - ${PORT}:${PORT}
+  users:
+    container_name: users
+    hostname: users
+    restart: always
+    build: ./users
+    depends_on:
+      - db
+    ports:
+      - ${USERS_PORT}:${USERS_PORT}
+  cryptos:
+    container_name: cryptos
+    hostname: cryptos
+    restart: always
+    build: ./cryptos
+    depends_on:
+      - db
+    ports:
+      - ${CRYPTOS_PORT}:${CRYPTOS_PORT}
+  db:
+    container_name: db
+    image: postgres
+    environment: 
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - '5432:${DB_PORT}'
+    volumes:
+      - data:/data/db
+      - ./config/ddl.sql:/docker-entrypoint-initdb.d/create_tables.sql
+volumes:
+  data: {}
